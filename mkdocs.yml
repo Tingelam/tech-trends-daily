@@ -1,0 +1,102 @@
+# 前沿技术日报 - MkDocs Material 配置
+site_name: 前沿技术日报
+site_description: 每日技术趋势报告，涵盖 AI/LLM、开发者工具、开源项目等前沿技术动态
+site_author: Hermes Agent
+
+# 仓库信息
+repo_name: tech-trends-daily
+repo_url: https://github.com/your-username/tech-trends-daily
+
+# 主题配置
+theme:
+  name: material
+  language: zh
+  palette:
+    # 浅色模式
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    # 深色模式
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换到浅色模式
+  
+  features:
+    # 导航功能
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    
+    # 搜索功能
+    - search.suggest
+    - search.highlight
+    - search.share
+    
+    # 内容功能
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    
+    # 页脚功能
+    - footer.previous_next
+  
+  icon:
+    repo: fontawesome/brands/github
+
+# Markdown 扩展
+markdown_extensions:
+  # 标准扩展
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  
+  # 代码块扩展
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+# 插件
+plugins:
+  - search:
+      lang: zh
+  - tags
+
+# 自定义 CSS
+extra_css:
+  - stylesheets/extra.css
+
+# 额外信息
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-username
+
+# 导航配置
+nav:
+  - 首页: index.md
+  - 日报:
+    - 2026年:
+      - 5月:
+        - 2026-05-23: daily/2026/05/2026-05-23.md
+        - 2026-05-22: daily/2026/05/2026-05-22.md
+  - 关于: about.md
