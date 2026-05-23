@@ -46,18 +46,44 @@ overview_items = []
 m = re.search(r"## 🧭 今日概览.*?\n\n(.*?)(?=\n---)", report, re.DOTALL)
 if m:
     for line in m.group(1).strip().split("\n"):
-        # 格式: 1. **[标题](链接)** — 描述，HN 351分/218评论，更多描述。
         km = re.match(r'\d+\.\s*\*\*\[(.+?)\]\((.+?)\)\*\*\s*[—–-]\s*(.+)$', line.strip())
         if km:
             title, url, rest = km.group(1), km.group(2), km.group(3)
-            # 提取热度
             heat_m = re.search(r'HN\s*(\d+)分', rest)
             heat = f"HN {heat_m.group(1)}分" if heat_m else ""
-            # 提取一句话描述（去掉热度信息）
             desc = re.sub(r'HN\s*\d+分\s*/\s*\d+评论[，,]?\s*', '', rest).strip()
-            if len(desc) > 60:
-                desc = desc[:60] + "..."
+            if len(desc) > 50:
+                desc = desc[:50] + "..."
             overview_items.append({"title": title, "url": url, "heat": heat, "desc": desc})
+
+# --- 提取 AI/LLM 前5条 ---
+ai_items = []
+m = re.search(r"## 🧠 AI / LLM\n\n(.*?)(?=\n---)", report, re.DOTALL)
+if m:
+    for line in m.group(1).strip().split("\n"):
+        # 匹配新格式: **N. [标题](url)** `来源` `热度`
+        am = re.match(r'\*\*\d+\.\s*\[(.+?)\]\((.+?)\)\*\*\s*`(\w+)`\s*`(.+?)`', line.strip())
+        if am:
+            ai_items.append({
+                "title": am.group(1),
+                "url": am.group(2),
+                "source": am.group(3),
+                "heat": am.group(4)
+            })
+
+# --- 提取开发者工具前5条 ---
+dev_items = []
+m = re.search(r"## 🛠 开发者工具\n\n(.*?)(?=\n---)", report, re.DOTALL)
+if m:
+    for line in m.group(1).strip().split("\n"):
+        dm = re.match(r'\*\*\d+\.\s*\[(.+?)\]\((.+?)\)\*\*\s*`(\w+)`\s*`(.+?)`', line.strip())
+        if dm:
+            dev_items.append({
+                "title": dm.group(1),
+                "url": dm.group(2),
+                "source": dm.group(3),
+                "heat": dm.group(4)
+            })
 
 # --- 提取数据看板 ---
 dashboard_items = []
@@ -109,9 +135,8 @@ if os.path.exists(index_file):
         if not existing_history.startswith("|"):
             existing_history = "| 日期 | 亮点 |\n|------|------|\n" + existing_history
 
-# 更新历史列表
 if date not in existing_history:
-    hl = [item["title"][:15] for item in overview_items[:3]]
+    hl = [item["title"][:12] for item in overview_items[:3]]
     new_row = f"| [{date}](daily/{year}/{month}/{date}.md) | {' · '.join(hl)} |"
     if "|------|------|" in existing_history:
         existing_history = existing_history.replace(
@@ -120,18 +145,29 @@ if date not in existing_history:
         )
 
 # --- 组装首页 ---
+# 核心资讯卡片
 cards = ""
 for item in overview_items[:3]:
     cards += f'''
--   **{item["title"]}** `{item["heat"]}`
+-   **[{item["title"]}]({item["url"]})** `{item["heat"]}`
 
     ---
 
     {item["desc"]}
 
-    [:octicons-link-external-24: 原文]({item["url"]}){{ .md-button }}
 '''
 
+# AI/LLM 表格
+ai_table = "| 技术 | 创新点 | 来源 |\n|------|--------|------|\n"
+for item in ai_items[:5]:
+    ai_table += f"| [{item['title']}]({item['url']}) | - | `{item['source']}` `{item['heat']}` |\n"
+
+# 开发者工具表格
+dev_table = "| 工具 | 核心功能 | 来源 |\n|------|----------|------|\n"
+for item in dev_items[:5]:
+    dev_table += f"| [{item['title']}]({item['url']}) | - | `{item['source']}` `{item['heat']}` |\n"
+
+# 数据看板
 icons = ["material-fire", "material-comment-text", "material-arrow-up-bold", "material-star"]
 dash = ""
 for i, item in enumerate(dashboard_items[:4]):
@@ -141,33 +177,46 @@ for i, item in enumerate(dashboard_items[:4]):
 
     ---
 
-    {item["metric"]}
-
     [{item["title"]}]({item["url"]})
 '''
 
+# 趋势洞察
 ins = ""
-for i, item in enumerate(insights[:4], 1):
+for i, item in enumerate(insights[:3], 1):
     ins += f"{i}. **{item['bold']}** — {item['rest']}\n"
 
-nt = "| 项目 | 说明 |\n|------|------|\n"
+# 值得关注
+nt = ""
 for item in notable[:4]:
-    nt += f"| [{item['title']}]({item['url']}) | {item['desc']} |\n"
+    nt += f"- **[{item['title']}]({item['url']})** — {item['desc']}\n"
 
 index = f"""# 前沿技术日报
 
-<div class="admonition info" style="border-left-color: var(--md-accent-fg-color);">
-<p class="admonition-title" style="background: var(--md-accent-fg-color--transparent);">📡 {date} · 数据采集状态</p>
-<p><strong>{src_count}</strong> · {collect_time} · <strong>{data_stats}</strong></p>
+<div class="admonition quote" style="border-left-color: var(--md-accent-fg-color); padding: 8px 16px; margin-bottom: 0;">
+<p style="margin: 0; font-size: 0.85em; color: var(--md-default-fg-color--light);">
+📡 {date} · {src_count} · <strong>{data_stats}</strong> · {collect_time} ✅
+</p>
 </div>
 
 ---
 
-## 📌 今日三句话
+## 📌 核心资讯
 
 <div class="grid cards" markdown>
 {cards}
 </div>
+
+---
+
+## 🧠 AI / LLM · 技术要点
+
+{ai_table}
+
+---
+
+## 🛠 开发者工具 · 实用价值
+
+{dev_table}
 
 ---
 
@@ -182,7 +231,7 @@ index = f"""# 前沿技术日报
 ## 💡 趋势洞察
 
 {ins}
-[:octicons-arrow-right-24: 查看完整日报](daily/{year}/{month}/{date}.md){{ .md-button .md-button--primary }}
+[:octicons-arrow-right-24: 完整日报](daily/{year}/{month}/{date}.md){{ .md-button .md-button--primary }}
 
 ---
 
@@ -194,6 +243,12 @@ index = f"""# 前沿技术日报
 ## 📅 历史日报
 
 {existing_history}
+
+---
+
+<div style="text-align: center; font-size: 0.75em; color: var(--md-default-fg-color--lightest);">
+数据来源：<a href="https://news.ycombinator.com">Hacker News</a> · <a href="https://huggingface.co/papers">HuggingFace Papers</a> · <a href="https://github.com/trending">GitHub</a> · 由 Hermes Agent 自动生成
+</div>
 """
 
 with open(index_file, "w", encoding="utf-8") as f:
