@@ -2,58 +2,56 @@
 
 欢迎来到**前沿技术日报**站点！这里汇集了每日最新的技术趋势报告，涵盖 AI/LLM、开发者工具、开源项目等前沿技术动态。
 
-## 📊 今日概览
+---
 
-<div class="grid cards" markdown>
+## 🧭 今日概览 | 2026-05-23
 
--   :material-clock-fast:{ .lg .middle } **实时更新**
+> 数据来源：Hacker News (30条) · HuggingFace Daily Papers (15条) · HuggingFace Models (10条) · GitHub (15条) | 2026-05-23 03:55 UTC | 共 70 条数据，全部验证通过 ✅
 
-    ---
+<div class="admonition abstract">
+<p class="admonition-title">📌 3 条最重要的技术动态</p>
 
-    每天自动采集 HN、GitHub、HuggingFace 等多个数据源，生成最新的技术趋势报告
+1. **[Anthropic Project Glasswing 首次更新](https://www.anthropic.com/research/glasswing-initial-update)** — Anthropic 发布其新研究项目 Glasswing 的初步进展，HN 351分/218评论，暗示 Anthropic 在 AI 安全研究方向的重大布局。
 
-    [:octicons-arrow-right-24: 查看最新日报](daily/2026/05/2026-05-23.md)
+2. **[DeepSeek V4 Pro 价格折扣永久化](https://api-docs.deepseek.com/quick_start/pricing)** — DeepSeek 宣布 V4 Pro 的折扣定价永久生效，HN 333分/197评论，这将进一步加剧 LLM API 价格战，降低开发者使用门槛。
 
--   :material-chart-line:{ .lg .middle } **数据驱动**
-
-    ---
-
-    基于热度、Stars、Upvotes 等量化指标，筛选出最有价值的技术动态
-
-    [:octicons-arrow-right-24: 了解更多](about.md)
-
--   :material-robot:{ .lg .middle } **AI 分析**
-
-    ---
-
-    使用 LLM 对新闻进行深度分析，提供技术背景和趋势洞察
-
-    [:octicons-arrow-right-24: 查看分析](daily/2026/05/2026-05-23.md#趋势洞察)
-
--   :material-magnify:{ .lg .middle } **全文搜索**
-
-    ---
-
-    支持全文搜索，快速定位你感兴趣的技术话题和项目
-
-    [:octicons-arrow-right-24: 开始搜索](# "点击搜索框")
+3. **[Microsoft 开始取消 Claude Code 许可](https://www.theverge.com/tech/930447/microsoft-claude-code-discontinued-notepad)** — 微软逐步停止对 Claude Code 的许可证支持，HN 164分/121评论，暗示微软正在收紧与竞争对手 AI 产品的合作策略。
 
 </div>
 
-## 📅 最新日报
+[:octicons-arrow-right-24: 查看完整日报](daily/2026/05/2026-05-23.md){ .md-button .md-button--primary }
 
-| 日期 | 分类 | 亮点 |
-|------|------|------|
-| [2026-05-23](daily/2026/05/2026-05-23.md) | AI/LLM, 开发工具 | 最新 AI 模型发布、热门开源项目 |
-| [2026-05-22](daily/2026/05/2026-05-22.md) | AI/LLM, 数据科学 | 新兴技术趋势、社区讨论热点 |
+---
 
-## 🏷️ 热门标签
+## 📊 各分类速览
 
-<div class="tag-cloud">
+### 🧠 AI / LLM
 
-`AI` `LLM` `GPT` `开源` `GitHub` `HuggingFace` `Python` `JavaScript` `Rust` `Go` `容器` `Kubernetes` `机器学习` `深度学习` `数据科学`
+| # | 标题 | 热度 |
+|---|------|------|
+| 1 | [如果"你"是 LLM，请阅读此页](https://annas-archive.gl/blog/llms-txt.html) | HN 747分 / 408评论 |
+| 2 | [Antigravity 2.0 登顶 OpenSCAD 3D 建模 LLM 基准测试](https://modelrift.com/blog/openscad-llm-benchmark/) | HN 359分 / 143评论 |
+| 3 | [CODA：将 Transformer Block 重写为 GEMM-Epilogue 程序](https://arxiv.org/abs/2605.19269) | HN 101分 / 12评论 |
 
-</div>
+### 🛠 开发者工具
+
+| # | 标题 | 热度 |
+|---|------|------|
+| 1 | [yt-dlp 宣布 Bun 支持已有限且弃用](https://github.com/yt-dlp/yt-dlp/issues/16766) | HN 399分 / 417评论 |
+| 2 | [Deno 2.8 发布](https://deno.com/blog/v2.8) | HN 325分 / 141评论 |
+| 3 | [Slumber：终端 HTTP 客户端](https://slumber.lucaspickering.me) | HN 174分 / 62评论 |
+
+[:octicons-arrow-right-24: 查看完整日报](daily/2026/05/2026-05-23.md){ .md-button }
+
+---
+
+## 📅 历史日报
+
+| 日期 | 亮点 |
+|------|------|
+| [2026-05-23](daily/2026/05/2026-05-23.md) | 如果"你"是 LLM，请阅读此...、Antigravity 2.0...、CODA：将 Transfor... |
+
+---
 
 ## 📈 数据来源
 
