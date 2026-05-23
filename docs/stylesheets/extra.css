@@ -12,7 +12,6 @@
 
 /* ==================== 标题样式 ==================== */
 
-/* 一级标题 */
 .md-content h1 {
     color: #1a1a2e;
     font-size: 2.2rem;
@@ -26,7 +25,6 @@
     background-clip: text;
 }
 
-/* 二级标题 */
 .md-content h2 {
     color: #2d3748;
     font-size: 1.8rem;
@@ -41,7 +39,6 @@
     border-radius: 0 8px 8px 0;
 }
 
-/* 三级标题 - GitHub 项目 */
 .md-content h3 {
     color: #4a5568;
     font-size: 1.3rem;
@@ -202,25 +199,6 @@
     border-left-color: #ff6d00;
 }
 
-/* ==================== 日报页面特殊样式 ==================== */
-
-/* 日报页面的项目卡片 */
-.md-content__inner:has(h1:has(.headerlink[href*="2026"])) h3 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.8rem;
-}
-
-/* 日报页面的核心功能和技术创新 */
-.md-content__inner:has(h1:has(.headerlink[href*="2026"])) p:has(strong:first-child) {
-    margin-bottom: 0.5rem;
-}
-
-/* 日报页面的列表项 */
-.md-content__inner:has(h1:has(.headerlink[href*="2026"])) ul li {
-    margin-bottom: 0.6rem;
-    line-height: 1.7;
-}
-
 /* ==================== 响应式优化 ==================== */
 
 @media screen and (max-width: 76.1875em) {
@@ -278,6 +256,112 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #764ba2, #667eea);
+}
+
+/* ==================== 深色模式样式 ==================== */
+
+[data-md-color-scheme="slate"] .md-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+[data-md-color-scheme="slate"] .md-content h1 {
+    background: linear-gradient(90deg, #818cf8, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    border-bottom-color: #818cf8;
+}
+
+[data-md-color-scheme="slate"] .md-content h2 {
+    color: #e2e8f0;
+    border-left-color: #818cf8;
+    background: linear-gradient(90deg, rgba(129, 140, 248, 0.1), transparent);
+}
+
+[data-md-color-scheme="slate"] .md-content h3 {
+    color: #e2e8f0;
+    background: #1e293b;
+    border-left-color: #818cf8;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-md-color-scheme="slate"] .md-content h3:hover {
+    box-shadow: 0 6px 12px rgba(129, 140, 248, 0.2);
+    border-left-color: #a78bfa;
+}
+
+[data-md-color-scheme="slate"] .md-content blockquote {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+}
+
+[data-md-color-scheme="slate"] .md-content ul li {
+    color: #cbd5e1;
+}
+
+[data-md-color-scheme="slate"] .md-content ul li::before {
+    color: #818cf8;
+}
+
+[data-md-color-scheme="slate"] .md-content ul ul li::before {
+    color: #a78bfa;
+}
+
+[data-md-color-scheme="slate"] .md-content code {
+    background: linear-gradient(135deg, #818cf820, #a78bfa20);
+    color: #818cf8;
+    border: 1px solid #818cf830;
+}
+
+[data-md-color-scheme="slate"] .md-content a {
+    color: #818cf8;
+}
+
+[data-md-color-scheme="slate"] .md-content a:hover {
+    color: #a78bfa;
+    border-bottom-color: #a78bfa;
+}
+
+[data-md-color-scheme="slate"] .md-content strong {
+    color: #e2e8f0;
+}
+
+[data-md-color-scheme="slate"] .md-content em {
+    color: #818cf8;
+}
+
+[data-md-color-scheme="slate"] .md-content hr {
+    background: linear-gradient(90deg, #818cf8, #a78bfa, #818cf8);
+}
+
+[data-md-color-scheme="slate"] .md-content h3:has(a[href*="github.com"]) {
+    background: linear-gradient(135deg, #1e293b 0%, #1e293b 100%);
+    border-left: 4px solid #818cf8;
+}
+
+[data-md-color-scheme="slate"] .md-content h3:has(a[href*="github.com"]):hover {
+    border-left-color: #a78bfa;
+}
+
+[data-md-color-scheme="slate"] .md-content h3:has(a[href*="huggingface.co"]) {
+    background: linear-gradient(135deg, #1e293b 0%, #1e293b 100%);
+    border-left: 4px solid #f59e0b;
+}
+
+[data-md-color-scheme="slate"] .md-content h3:has(a[href*="huggingface.co"]):hover {
+    border-left-color: #fbbf24;
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #818cf8, #a78bfa);
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #a78bfa, #818cf8);
 }
 
 /* ==================== 打印样式 ==================== */
