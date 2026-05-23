@@ -202,6 +202,25 @@
     border-left-color: #ff6d00;
 }
 
+/* ==================== 日报页面特殊样式 ==================== */
+
+/* 日报页面的项目卡片 */
+.md-content__inner:has(h1:has(.headerlink[href*="2026"])) h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+}
+
+/* 日报页面的核心功能和技术创新 */
+.md-content__inner:has(h1:has(.headerlink[href*="2026"])) p:has(strong:first-child) {
+    margin-bottom: 0.5rem;
+}
+
+/* 日报页面的列表项 */
+.md-content__inner:has(h1:has(.headerlink[href*="2026"])) ul li {
+    margin-bottom: 0.6rem;
+    line-height: 1.7;
+}
+
 /* ==================== 响应式优化 ==================== */
 
 @media screen and (max-width: 76.1875em) {
