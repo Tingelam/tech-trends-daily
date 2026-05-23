@@ -1,28 +1,21 @@
 #!/bin/bash
 # 每日日报站点更新脚本
 # 用法: ./update-daily-reports.sh [日期]
-# 示例: ./update-daily-reports.sh 2026-05-23
 
 set -e
 
-# 配置路径
 REPORTS_DIR="$HOME/Documents/HermesReports/tech-trends"
 DOCS_DIR="$REPORTS_DIR/daily-reports/docs/daily"
 REPO_DIR="$REPORTS_DIR/daily-reports"
 
-# 获取日期参数，默认为今天
 DATE=${1:-$(date +%Y-%m-%d)}
 YEAR=$(echo $DATE | cut -d'-' -f1)
 MONTH=$(echo $DATE | cut -d'-' -f2)
 
 echo "📅 更新日报站点: $DATE"
 
-# 1. 创建目录结构
-echo "📁 创建目录结构..."
 mkdir -p "$DOCS_DIR/$YEAR/$MONTH"
 
-# 2. 复制日报文件
-echo "📄 复制日报文件..."
 SOURCE_FILE="$REPORTS_DIR/daily/$YEAR/$MONTH/$DATE.md"
 if [ -f "$SOURCE_FILE" ]; then
     cp "$SOURCE_FILE" "$DOCS_DIR/$YEAR/$MONTH/"
@@ -32,8 +25,7 @@ else
     exit 1
 fi
 
-# 3. 从日报中提取今日概览，更新首页
-echo "📝 更新首页今日概览..."
+echo "📝 更新首页..."
 python3 << 'PYEOF'
 import re
 import os
@@ -43,194 +35,176 @@ date = os.environ.get("DATE", "")
 year = os.environ.get("YEAR", "")
 month = os.environ.get("MONTH", "")
 
-# 读取今日日报
 report_file = os.path.join(reports_dir, "daily", year, month, f"{date}.md")
 index_file = os.path.join(reports_dir, "daily-reports", "docs", "index.md")
 
-if not os.path.exists(report_file):
-    print(f"⚠️  日报文件不存在: {report_file}")
-    exit(1)
-
 with open(report_file, "r", encoding="utf-8") as f:
-    report_content = f.read()
+    report = f.read()
 
-# 提取数据来源信息
-meta_match = re.search(r"> 数据来源：(.+?)\n> 采集时间：(.+?) \| (.+?)$", report_content, re.MULTILINE)
-data_source = meta_match.group(1) if meta_match else "多源数据"
-collect_time = meta_match.group(2) if meta_match else date
-data_stats = meta_match.group(3) if meta_match else ""
+# --- 提取今日概览 ---
+overview_items = []
+m = re.search(r"## 🧭 今日概览.*?\n\n(.*?)(?=\n---)", report, re.DOTALL)
+if m:
+    for line in m.group(1).strip().split("\n"):
+        # 格式: 1. **[标题](链接)** — 描述，HN 351分/218评论，更多描述。
+        km = re.match(r'\d+\.\s*\*\*\[(.+?)\]\((.+?)\)\*\*\s*[—–-]\s*(.+)$', line.strip())
+        if km:
+            title, url, rest = km.group(1), km.group(2), km.group(3)
+            # 提取热度
+            heat_m = re.search(r'HN\s*(\d+)分', rest)
+            heat = f"HN {heat_m.group(1)}分" if heat_m else ""
+            # 提取一句话描述（去掉热度信息）
+            desc = re.sub(r'HN\s*\d+分\s*/\s*\d+评论[，,]?\s*', '', rest).strip()
+            if len(desc) > 60:
+                desc = desc[:60] + "..."
+            overview_items.append({"title": title, "url": url, "heat": heat, "desc": desc})
 
-# 提取今日概览（3条重点）
-overview_match = re.search(r"## 🧭 今日概览.*?\n\n(.*?)(?=\n---)", report_content, re.DOTALL)
-overview_content = overview_match.group(1).strip() if overview_match else "暂无数据"
+# --- 提取数据看板 ---
+dashboard_items = []
+m = re.search(r"## 📊 数据看板\n\n\|.*?\n\|[-| ]+\n((?:\|.*?\n)+)", report, re.DOTALL)
+if m:
+    for line in m.group(1).strip().split("\n"):
+        dm = re.match(r'\|\s*(.+?)\s*\|\s*([\d,]+)\S*\s*—\s*\[(.+?)\]\((.+?)\)', line)
+        if dm:
+            dashboard_items.append({
+                "metric": dm.group(1).strip(),
+                "value": dm.group(2).strip(),
+                "title": dm.group(3),
+                "url": dm.group(4)
+            })
 
-# 提取 AI/LLM 前3条
-ai_section = re.search(r"## 🧠 AI / LLM\n\n(.*?)(?=\n---)", report_content, re.DOTALL)
-ai_items = []
-if ai_section:
-    lines = ai_section.group(1).strip().split("\n")
-    count = 0
-    for line in lines:
-        if line.startswith("**") and count < 3:
-            # 提取标题和链接
-            match = re.match(r'\*\*(\d+)\. \[(.+?)\]\((.+?)\)\*\*.*?—\s*(.+?)$', line)
-            if match:
-                ai_items.append({
-                    "num": match.group(1),
-                    "title": match.group(2),
-                    "url": match.group(3),
-                    "heat": match.group(4).strip()
-                })
-                count += 1
+# --- 提取趋势洞察 ---
+insights = []
+m = re.search(r"## 💡 趋势洞察\n\n(.*?)(?=\n---)", report, re.DOTALL)
+if m:
+    for line in m.group(1).strip().split("\n"):
+        im = re.match(r'\d+\.\s*\*\*(.+?)\*\*\s*[—–-]\s*(.+)$', line.strip())
+        if im:
+            insights.append({"bold": im.group(1), "rest": im.group(2).strip()})
 
-# 提取开发者工具前3条
-dev_section = re.search(r"## 🛠 开发者工具\n\n(.*?)(?=\n---)", report_content, re.DOTALL)
-dev_items = []
-if dev_section:
-    lines = dev_section.group(1).strip().split("\n")
-    count = 0
-    for line in lines:
-        if line.startswith("**") and count < 3:
-            match = re.match(r'\*\*(\d+)\. \[(.+?)\]\((.+?)\)\*\*.*?—\s*(.+?)$', line)
-            if match:
-                dev_items.append({
-                    "num": match.group(1),
-                    "title": match.group(2),
-                    "url": match.group(3),
-                    "heat": match.group(4).strip()
-                })
-                count += 1
+# --- 提取值得关注 ---
+notable = []
+m = re.search(r"## ⚡ 值得关注\n\n(.*?)(?=\n---|\Z)", report, re.DOTALL)
+if m:
+    for line in m.group(1).strip().split("\n"):
+        nm = re.match(r'\d+\.\s*\*\*\[(.+?)\]\((.+?)\)\*\*\s*[—–-]\s*(.+)$', line.strip())
+        if nm:
+            notable.append({"title": nm.group(1), "url": nm.group(2), "desc": nm.group(3).strip()})
 
-# 生成首页内容
-def gen_overview_block():
-    lines = overview_content.split("\n")
-    result = []
-    for line in lines:
-        line = line.strip()
-        if line.startswith("**") or line.startswith("1.") or line.startswith("2.") or line.startswith("3."):
-            result.append(line)
-    return "\n\n".join(result)
+# --- 提取数据来源 ---
+meta_m = re.search(r"> 数据来源：(.+?)$", report, re.MULTILINE)
+src_count = meta_m.group(1).strip() if meta_m else ""
+time_m = re.search(r"> 采集时间：(.+?) \| (.+?)$", report, re.MULTILINE)
+collect_time = time_m.group(1).strip() if time_m else ""
+data_stats = time_m.group(2).strip() if time_m else ""
 
-def gen_table(items):
-    if not items:
-        return "| - | 暂无数据 | - |"
-    rows = []
-    for item in items:
-        rows.append(f"| {item['num']} | [{item['title']}]({item['url']}) | {item['heat']} |")
-    return "| # | 标题 | 热度 |\n|---|------|------|\n" + "\n".join(rows)
+# --- 读取现有历史日报 ---
+existing_history = "| 日期 | 亮点 |\n|------|------|\n"
+if os.path.exists(index_file):
+    with open(index_file, "r", encoding="utf-8") as f:
+        old = f.read()
+    hm = re.search(r"## 📅 历史日报\n\n(.*?)(?=\n---|\Z)", old, re.DOTALL)
+    if hm:
+        existing_history = hm.group(1).strip()
+        if not existing_history.startswith("|"):
+            existing_history = "| 日期 | 亮点 |\n|------|------|\n" + existing_history
 
-# 提取亮点关键词
-def extract_highlights():
-    highlights = []
-    for item in (ai_items + dev_items)[:3]:
-        # 提取标题前几个字作为关键词
-        title = item['title']
-        if len(title) > 15:
-            title = title[:15] + "..."
-        highlights.append(title)
-    return "、".join(highlights)
+# 更新历史列表
+if date not in existing_history:
+    hl = [item["title"][:15] for item in overview_items[:3]]
+    new_row = f"| [{date}](daily/{year}/{month}/{date}.md) | {' · '.join(hl)} |"
+    if "|------|------|" in existing_history:
+        existing_history = existing_history.replace(
+            "|------|------|",
+            f"|------|------|\n{new_row}"
+        )
 
-highlights = extract_highlights()
+# --- 组装首页 ---
+cards = ""
+for item in overview_items[:3]:
+    cards += f'''
+-   **{item["title"]}** `{item["heat"]}`
 
-index_content = f"""# 前沿技术日报
+    ---
 
-欢迎来到**前沿技术日报**站点！这里汇集了每日最新的技术趋势报告，涵盖 AI/LLM、开发者工具、开源项目等前沿技术动态。
+    {item["desc"]}
+
+    [:octicons-link-external-24: 原文]({item["url"]}){{ .md-button }}
+'''
+
+icons = ["material-fire", "material-comment-text", "material-arrow-up-bold", "material-star"]
+dash = ""
+for i, item in enumerate(dashboard_items[:4]):
+    icon = icons[i] if i < len(icons) else "material-chart-line"
+    dash += f'''
+-   :{icon}:{{ .lg .middle }} **{item["value"]}**
+
+    ---
+
+    {item["metric"]}
+
+    [{item["title"]}]({item["url"]})
+'''
+
+ins = ""
+for i, item in enumerate(insights[:4], 1):
+    ins += f"{i}. **{item['bold']}** — {item['rest']}\n"
+
+nt = "| 项目 | 说明 |\n|------|------|\n"
+for item in notable[:4]:
+    nt += f"| [{item['title']}]({item['url']}) | {item['desc']} |\n"
+
+index = f"""# 前沿技术日报
+
+<div class="admonition info" style="border-left-color: var(--md-accent-fg-color);">
+<p class="admonition-title" style="background: var(--md-accent-fg-color--transparent);">📡 {date} · 数据采集状态</p>
+<p><strong>{src_count}</strong> · {collect_time} · <strong>{data_stats}</strong></p>
+</div>
 
 ---
 
-## 🧭 今日概览 | {date}
+## 📌 今日三句话
 
-> 数据来源：{data_source} | {collect_time} | {data_stats}
-
-<div class="admonition abstract">
-<p class="admonition-title">📌 3 条最重要的技术动态</p>
-
-{gen_overview_block()}
-
+<div class="grid cards" markdown>
+{cards}
 </div>
 
+---
+
+## 📊 数据看板
+
+<div class="grid cards" markdown>
+{dash}
+</div>
+
+---
+
+## 💡 趋势洞察
+
+{ins}
 [:octicons-arrow-right-24: 查看完整日报](daily/{year}/{month}/{date}.md){{ .md-button .md-button--primary }}
 
 ---
 
-## 📊 各分类速览
+## ⚡ 值得关注
 
-### 🧠 AI / LLM
-
-{gen_table(ai_items)}
-
-### 🛠 开发者工具
-
-{gen_table(dev_items)}
-
-[:octicons-arrow-right-24: 查看完整日报](daily/{year}/{month}/{date}.md){{ .md-button }}
-
+{nt}
 ---
 
 ## 📅 历史日报
 
-| 日期 | 亮点 |
-|------|------|
-| [{date}](daily/{year}/{month}/{date}.md) | {highlights} |
-
----
-
-## 📈 数据来源
-
-<div class="grid cards" markdown>
-
--   :fontawesome-brands-hacker-news:{{ .lg .middle }} **Hacker News**
-
-    ---
-
-    技术社区讨论热度
-
--   :fontawesome-brands-github:{{ .lg .middle }} **GitHub**
-
-    ---
-
-    开源项目 Stars 趋势
-
--   :fontawesome-brands-python:{{ .lg .middle }} **HuggingFace**
-
-    ---
-
-    AI 模型和论文动态
-
--   :fontawesome-brands-reddit:{{ .lg .middle }} **Reddit**
-
-    ---
-
-    技术社区讨论
-
-</div>
-
----
-
-<div class="admonition tip">
-<p class="admonition-title">💡 使用提示</p>
-<p>使用顶部的<strong>搜索框</strong>可以快速搜索任意关键词，支持中英文搜索。</p>
-<p>点击左侧导航栏可以按月份浏览历史日报。</p>
-</div>
+{existing_history}
 """
 
 with open(index_file, "w", encoding="utf-8") as f:
-    f.write(index_content)
+    f.write(index)
 
-print(f"✅ 首页已更新: {index_file}")
+print(f"✅ 首页已更新")
 PYEOF
 
-# 4. 构建站点
 echo "🔨 构建站点..."
 cd "$REPO_DIR"
 mkdocs build --clean
-
-# 5. 显示统计信息
-echo ""
-echo "📊 统计信息:"
-echo "   - 日报文件: $(ls -1 "$DOCS_DIR"/*/*/*.md 2>/dev/null | wc -l) 个"
-echo "   - 站点大小: $(du -sh "$REPO_DIR/site" 2>/dev/null | cut -f1)"
-echo "   - 构建时间: $(date)"
 
 echo ""
 echo "✅ 站点更新完成！"
