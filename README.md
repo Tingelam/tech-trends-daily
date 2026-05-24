@@ -46,21 +46,22 @@ mkdocs serve
 ### 3. 部署到 GitHub Pages
 
 ```bash
-./deploy.sh
+# 本地手动触发一次完整同步 + 推送
+./auto-deploy.sh
+
+# 仅本地构建检查
+./update-daily-reports.sh 2026-05-23
 ```
 
 ## 自动化
 
 ### Cron Job 设置
 
-每天上午 9:30 自动更新站点：
+当前推荐做法：**日报生成 Cron 保持 09:00 产出源报告，随后自动执行站点同步脚本，把最新报告推到 GitHub main，再由 GitHub Actions 自动发布 GitHub Pages。**
 
 ```bash
-# 编辑 crontab
-crontab -e
-
-# 添加以下行
-30 9 * * * cd ~/Documents/HermesReports/tech-trends/daily-reports && ./update-daily-reports.sh >> /tmp/daily-reports-update.log 2>&1
+# 仅站点同步/推送（如果用系统 crontab）
+30 9 * * * cd ~/Documents/HermesReports/tech-trends/daily-reports && ./auto-deploy.sh >> /tmp/daily-reports-update.log 2>&1
 ```
 
 **同步规则：** `update-daily-reports.sh` 会把 `~/Documents/HermesReports/tech-trends/daily/YYYY/MM/YYYY-MM-DD.md` 同步到：
@@ -69,15 +70,15 @@ crontab -e
 
 这样首页和日报详情页会保持同一风格与同一内容基调，不会再出现首页/详情页分裂。
 
+**发布规则：** `auto-deploy.sh` 会依次执行：
+1. `git pull --rebase origin main`
+2. `./update-daily-reports.sh [日期]`
+3. `git add + commit + push origin main`
+4. 由 `.github/workflows/deploy.yml` 自动构建并发布到 GitHub Pages
+
 ### Hermes Agent 集成
 
-在 Hermes Agent 中设置定时任务：
-
-```yaml
-# 每天 9:30 更新日报站点
-schedule: "30 9 * * *"
-prompt: "运行日报站点更新脚本"
-```
+当前 Hermes 已有日报 Cron：`8e435f20e77b`（每天 09:00）。若要做到“日报生成后自动更新 GitHub Pages”，建议把该 Cron 的提示词补充为：生成并写入源日报文件后，再执行 `~/Documents/HermesReports/tech-trends/daily-reports/auto-deploy.sh`，让 GitHub Pages 自动刷新。
 
 ## 自定义配置
 
