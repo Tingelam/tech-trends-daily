@@ -63,6 +63,12 @@ crontab -e
 30 9 * * * cd ~/Documents/HermesReports/tech-trends/daily-reports && ./update-daily-reports.sh >> /tmp/daily-reports-update.log 2>&1
 ```
 
+**同步规则：** `update-daily-reports.sh` 会把 `~/Documents/HermesReports/tech-trends/daily/YYYY/MM/YYYY-MM-DD.md` 同步到：
+- `docs/daily/YYYY/MM/YYYY-MM-DD.md`
+- `docs/index.md`（首页直接复用同一主体内容，仅补最小 front matter）
+
+这样首页和日报详情页会保持同一风格与同一内容基调，不会再出现首页/详情页分裂。
+
 ### Hermes Agent 集成
 
 在 Hermes Agent 中设置定时任务：

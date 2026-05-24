@@ -4,7 +4,7 @@ title: 前沿技术日报
 
 # 2026年5月23日 · 技术日报
 
-> **摘要：** 代码知识图谱爆发 | Claude Code 生态成型 | AI-Web 协议层出现 | 社区热议显著外溢
+> **摘要：** 代码知识图谱爆发 | Claude Code 生态成型 | AI-Web 协议层出现 | HN/Reddit 社区信号并入主报告
 
 ## 📈 趋势洞察
 
@@ -201,8 +201,6 @@ title: 前沿技术日报
 - 支持单图、多图和视频理解
 - **最适合边缘部署**的多模态模型，可在手机等移动设备上运行
 
-
-
 ## 🧠 AI / LLM 生态（HN / Reddit）
 
 **1.** [llms.txt：AI 爬虫访问 Web 资源标准化协议](https://annas-archive.gl/blog/llms-txt.html) `HN 747pts` · 今日最高
@@ -220,6 +218,12 @@ title: 前沿技术日报
 **5.** [Microsoft 承认 AI 比人工更贵](https://fortune.com/2026/05/22/microsoft-ai-cost-problem-tokens-agents/) `HN 209pts`
 > 微软内部报告：AI 运营成本高于人工，瓶颈在 token 消耗、推理成本。**AI 落地成本问题浮出水面。**
 
+**6.** [I was rejected by CursorAI, so I built my own "Cursor"](https://reddit.com/r/ClaudeAI/comments/1k79hkh/i_was_rejected_by_cursorai_so_i_built_my_own/) `r/ClaudeAI · Reddit 623↑ / 141评`
+> 近期 Claude 社区围绕「自建 AI coding IDE」的实践帖，讨论点集中在 **用 Claude + MCP + 自定义工作流替代封闭式 AI 编辑器**。
+
+**7.** [Don’t purchase Max subscription for Claude Code yet](https://reddit.com/r/ClaudeAI/comments/1kbhw3p/dont_purchase_max_subscription_for_claude_code/) `r/ClaudeAI · Reddit 129↑ / 106评`
+> Claude Code 用户对订阅模型与 API 使用边界的近期反馈，补充了 **工具商业化与开发者成本体验** 这条社区信号。
+
 ## 🔧 开发者工具（HN / Reddit）
 
 **1.** [yt-dlp 宣布 Bun 支持弃用](https://github.com/yt-dlp/yt-dlp/issues/16766) `HN 520pts / 542评论` · 评论最多
@@ -234,6 +238,9 @@ title: 前沿技术日报
 **4.** [Axe：12MB 二进制替代你的 AI 框架](https://github.com/jrswab/axe) `HN 227pts`
 > Show HN：极简 AI 框架，12MB 单文件替代 LangChain 等重型框架。**轻量化 AI 工具链趋势加速。**
 
+**5.** [Sandbox MCP: Enable LLMs to run ANY code safely](https://reddit.com/r/programming/comments/1k8tsig/sandbox_mcp_enable_llms_to_run_any_code_safely/) `r/programming · Reddit 23↑ / 7评`
+> 较新的开发者讨论，核心关注 **通过沙箱 + MCP 为编码代理开放受控执行能力**，与当天 GitHub Agent 工具链趋势方向一致。
+
 ## 🔒 隐私 / 安全（HN / Reddit）
 
 - [美国研究人员面临国际合作限制](https://www.science.org/content/article/u-s-researchers-face-new-restrictions-publishing-foreign-collaborators) `HN 401pts` — 限制与外国学者合作发表，影响学术自由
@@ -244,6 +251,7 @@ title: 前沿技术日报
 
 - [SpaceX Starship v3 成功发射](https://www.nbcnews.com/now/video/spacex-successfully-launches-prototype-of-starship-rocket-263835205505) `HN 239pts` — 第三代原型发射成功
 - [Wayland Compositor in Minecraft](https://www.daveorama.com/wayland/) `HN 242pts` — 在 Minecraft 中实现 Wayland 合成器
+- [Intel Updates Its PyTorch Extension With DeepSeek-R1 Support, New Optimizations](https://reddit.com/r/LocalLLaMA/comments/1k8x91h/intel_updates_its_pytorch_extension_with/) `r/LocalLLaMA · Reddit 54↑ / 13评` — 较新的本地模型部署讨论，补充 **Intel CPU/GPU 侧针对 DeepSeek-R1 的推理优化信号**
 
 ## 💬 社区热议（HN / Reddit）
 
@@ -256,5 +264,8 @@ title: 前沿技术日报
 **3.** [Paul Graham：财富税与所得税的转换](https://paulgraham.com/winc.html) `HN 188pts / 609评论` · 评论数最高
 > Paul Graham 新文讨论财富与收入税的数学关系。**609 条评论激烈辩论。**
 
-*数据来源：GitHub Trending · HuggingFace Models · Hacker News · Reddit（如当日可用）*
-*采集时间：2026-05-23 14:30 UTC*
+**4.** [[D] What are the best subreddits you follow for AI/ML/LLMs/NLP/Agentic AI etc?](https://reddit.com/r/MachineLearning/comments/1k7mibv/d_what_are_the_best_subreddits_you_follow_for/) `r/MachineLearning · Reddit 73↑ / 89评`
+> 近期社区在盘点 AI/LLM 信息源，反映出 **开发者开始重新整理高信噪比社区入口**，也说明 Reddit 更适合作为二级社区观察层。
+
+*数据来源：GitHub Trending · HuggingFace Models · Hacker News · Reddit（Pullpush 归档补充）*
+*采集时间：2026-05-23 14:30 UTC · Reddit 为归档社区信号，优先纳入近期 AI / 开发者讨论，不作为实时热榜解读*

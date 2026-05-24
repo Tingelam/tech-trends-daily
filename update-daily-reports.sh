@@ -37,10 +37,13 @@ date = os.environ['DATE']
 year = os.environ['YEAR']
 month = os.environ['MONTH']
 source_file = reports_dir / 'daily' / year / month / f'{date}.md'
+target_file = reports_dir / 'daily-reports' / 'docs' / 'daily' / year / month / f'{date}.md'
 index_file = reports_dir / 'daily-reports' / 'docs' / 'index.md'
 
 content = source_file.read_text(encoding='utf-8').strip() + '\n'
+target_file.write_text(content, encoding='utf-8')
 index_file.write_text('---\ntitle: 前沿技术日报\n---\n\n' + content, encoding='utf-8')
+print(f'✅ 日报页已同步: {target_file}')
 print(f'✅ 首页已同步: {index_file}')
 PYEOF
 
