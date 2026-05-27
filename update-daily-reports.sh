@@ -27,6 +27,30 @@ fi
 cp "$SOURCE_FILE" "$TARGET_FILE"
 echo "✅ 已复制日报: $SOURCE_FILE -> $TARGET_FILE"
 
+# 自动更新 mkdocs.yml nav：将新日期插入到对应年/月下（按日期倒序）
+echo "📝 更新 mkdocs.yml 导航..."
+MKDOCS_YML="$REPO_DIR/mkdocs.yml"
+NAV_ENTRY="        - $DATE: daily/$YEAR/$MONTH/$DATE.md"
+MONTH_LABEL="      $MONTH月:"
+YEAR_LABEL="    $YEAR年:"
+
+# 检查该日期是否已在 nav 中
+if ! grep -qF "$DATE: daily/$YEAR/$MONTH/$DATE.md" "$MKDOCS_YML"; then
+  # 如果该月份 section 不存在，插入整段
+  if ! grep -qF "$MONTH_LABEL" "$MKDOCS_YML"; then
+    # 在 "关于:" 之前插入新的年/月/日期
+    sed -i "/^  - 关于:/i\\  - 日报:\\n    - $YEAR_LABEL\\n$MONTH_LABEL\\n$NAV_ENTRY" "$MKDOCS_YML"
+    echo "✅ 新增 $YEAR/$MONTH 导航段 + $DATE"
+  else
+    # 月份已存在，在该月 section 下第一条之前插入新日期（保持倒序）
+    # 找到该月标签的行号，在其后第一个条目前插入
+    sed -i "/$MONTH_LABEL/a\\$NAV_ENTRY" "$MKDOCS_YML"
+    echo "✅ 新增 $DATE 到 $YEAR/$MONTH 导航"
+  fi
+else
+  echo "ℹ️ $DATE 已在导航中，跳过"
+fi
+
 echo "📝 同步首页（与日报保持同风格/同内容基调）..."
 DATE="$DATE" YEAR="$YEAR" MONTH="$MONTH" python3 <<'PYEOF'
 from pathlib import Path
