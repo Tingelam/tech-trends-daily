@@ -11,6 +11,7 @@ REPO_DIR="$REPORTS_DIR/daily-reports"
 DATE=${1:-$(date +%Y-%m-%d)}
 YEAR=$(echo "$DATE" | cut -d'-' -f1)
 MONTH=$(echo "$DATE" | cut -d'-' -f2)
+MONTH_NUM=$(printf '%d' "$MONTH")
 
 SOURCE_FILE="$REPORTS_DIR/daily/$YEAR/$MONTH/$DATE.md"
 TARGET_DIR="$DOCS_DIR/$YEAR/$MONTH"
@@ -31,19 +32,23 @@ echo "✅ 已复制日报: $SOURCE_FILE -> $TARGET_FILE"
 echo "📝 更新 mkdocs.yml 导航..."
 MKDOCS_YML="$REPO_DIR/mkdocs.yml"
 NAV_ENTRY="        - $DATE: daily/$YEAR/$MONTH/$DATE.md"
-MONTH_LABEL="      $MONTH月:"
+MONTH_LABEL="      - ${MONTH_NUM}月:"
 YEAR_LABEL="    $YEAR年:"
 
 # 检查该日期是否已在 nav 中
 if ! grep -qF "$DATE: daily/$YEAR/$MONTH/$DATE.md" "$MKDOCS_YML"; then
   # 如果该月份 section 不存在，插入整段
   if ! grep -qF "$MONTH_LABEL" "$MKDOCS_YML"; then
-    # 在 "关于:" 之前插入新的年/月/日期
-    sed -i "/^  - 关于:/i\\  - 日报:\\n    - $YEAR_LABEL\\n$MONTH_LABEL\\n$NAV_ENTRY" "$MKDOCS_YML"
-    echo "✅ 新增 $YEAR/$MONTH 导航段 + $DATE"
+    # 在已有年份下插入新的月份段；若年份不存在，再整体插入新的日报导航段
+    if grep -qF "$YEAR_LABEL" "$MKDOCS_YML"; then
+      sed -i "/^$YEAR_LABEL$/a\\$MONTH_LABEL\\n$NAV_ENTRY" "$MKDOCS_YML"
+      echo "✅ 新增 ${YEAR}年/${MONTH_NUM}月 导航段 + $DATE"
+    else
+      sed -i "/^  - 关于:/i\\  - 日报:\\n$YEAR_LABEL\\n$MONTH_LABEL\\n$NAV_ENTRY" "$MKDOCS_YML"
+      echo "✅ 新增 $YEAR/$MONTH 导航段 + $DATE"
+    fi
   else
     # 月份已存在，在该月 section 下第一条之前插入新日期（保持倒序）
-    # 找到该月标签的行号，在其后第一个条目前插入
     sed -i "/$MONTH_LABEL/a\\$NAV_ENTRY" "$MKDOCS_YML"
     echo "✅ 新增 $DATE 到 $YEAR/$MONTH 导航"
   fi
